@@ -24,11 +24,11 @@ object RoutesProxy {
     }
 }
 
-class ServiceErrorRoutesProxy[F[_]](implicit M: MonadError[F, ServiceError]) extends RoutesProxy[F, ServiceError] with Http4sDsl[F] /*with CirceOps*/ {
+class ServiceErrorRoutesProxy[F[_]](implicit M: MonadError[F, ServiceError]) extends RoutesProxy[F, ServiceError] with Http4sDsl[F] {
   private val errorResponse: ServiceError => F[Response[F]] = {
     /*case InvalidUserAge(age) => BadRequest(s"Invalid age $age".asJson)
     case UserAlreadyExists(username) => Conflict(username.asJson)*/
-    case NonExistingCustomer(customerId) => NotFound(ErrorResponse(s"Non existing customer for provided $customerId"))
+    case NonExistingCustomer(customerId) => NotFound(ErrorResponse(s"Non existing customer provided: $customerId"))
   }
 
   override def apply(routes: HttpRoutes[F]): HttpRoutes[F] =

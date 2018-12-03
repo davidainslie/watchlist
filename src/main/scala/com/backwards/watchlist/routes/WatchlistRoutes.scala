@@ -18,8 +18,7 @@ class WatchlistRoutes[F[_]: Effect](watchlistService: WatchlistService[F])(impli
     case GET -> Root / "watchlist" / customerId =>
       CustomerId(customerId).fold(
         error => BadRequest(ErrorResponse(error)),
-        //customerId => Watchlist(customerId, Seq(Watchlist.Item(Watchlist.ContentId("54321").right.get))).pure[F].flatMap(wl => Ok(wl)) //*> Ok("Ye Baby")
-        customerId => watchlistService.watchlist(customerId).flatMap(wl => Ok(wl)) //*> Ok("Ye Baby")
+        customerId => watchlistService.watchlist(customerId).flatMap(Created(_))
       )
   })
 }

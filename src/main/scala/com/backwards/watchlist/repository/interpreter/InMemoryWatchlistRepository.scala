@@ -21,8 +21,10 @@ class InMemoryWatchlistRepository[F[_]: Applicative] extends WatchlistRepository
   def get(customerId: CustomerId): F[Option[Watchlist]] =
     cache.get(customerId).pure[F]
 
-  def add(customerId: CustomerId, item: Watchlist.Item): F[Option[Watchlist]] =
-    Option(add(item)(cache.getOrElseUpdate(customerId, Watchlist(customerId)))).pure[F]
+  def add(customerId: CustomerId, item: Watchlist.Item): F[Option[Watchlist]] = {
+    val watchlist = add(item)(cache.getOrElse(customerId, Watchlist(customerId)))
+    cache.put(customerId, watchlist).pure[F]
+  }
 }
 
 object InMemoryWatchlistRepository {

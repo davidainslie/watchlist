@@ -3,15 +3,20 @@ package com.backwards.watchlist.routes
 import scala.language.higherKinds
 import cats.effect.IO
 import org.http4s.{EntityDecoder, Response}
-import org.scalatest.TestSuite
+import org.scalatest.{Assertion, TestSuite}
 
 trait RoutesFixtureIO {
   this: TestSuite =>
 
-  def responseAs[A](r: IO[Response[IO]])(implicit D: EntityDecoder[IO, A]): (Response[IO], A) = {
-    val rr = r.unsafeRunSync
-    val entity = rr.as[A].unsafeRunSync
+  def assert(r: IO[Assertion]): Assertion = r.unsafeRunSync
 
-    (rr, entity)
+  def assert[A](r: IO[Response[IO]])(implicit D: EntityDecoder[IO, A]): (Response[IO], A) = {
+    assert[A](r.unsafeRunSync)
+  }
+
+  def assert[A](r: Response[IO])(implicit D: EntityDecoder[IO, A]): (Response[IO], A) = {
+    val entity = r.as[A].unsafeRunSync
+
+    (r, entity)
   }
 }
