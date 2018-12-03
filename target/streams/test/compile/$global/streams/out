@@ -1,0 +1,4 @@
+[0m[[0m[31merror[0m] [0m[0m/Users/davidainslie/David/Backwards/Jobs/Sky/assignment/watchlist/src/test/scala/com/backwards/watchlist/routes/WatchlistRoutesSpec.scala:30:21: value error is not a member of com.backwards.watchlist.routes.ErrorResponse[0m
+[0m[[0m[31merror[0m] [0m[0m      errorResponse.error.message must (include ("Predicate failed") and include ("invalidCustomerId"))[0m
+[0m[[0m[31merror[0m] [0m[0m                    ^[0m
+[0m[[0m[31merror[0m] [0m[0mone error found[0m
