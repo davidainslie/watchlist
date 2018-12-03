@@ -1,9 +1,0 @@
-#Successful Tests
-#Mon Dec 03 18:40:28 GMT 2018
-com.backwards.watchlist.RunnerSpec=1543862427903
-com.backwards.watchlist.adt.CustomerSpec=1543862426212
-com.backwards.watchlist.service.WatchlistServiceSpec=1543862427741
-com.backwards.watchlist.adt.WatchlistSpec=1543862428137
-com.backwards.watchlist.repository.WatchlistRepositorySpec=1543862425544
-com.backwards.watchlist.routes.HealthRoutesSpec=1543862427683
-com.backwards.watchlist.routes.WatchlistRoutesSpec=1543862427976
