@@ -8,9 +8,6 @@ import org.http4s.dsl.Http4sDsl
 import com.backwards.http4s.circe.CirceOps
 import com.backwards.watchlist.adt.{CustomerId, Watchlist}
 import com.backwards.watchlist.service.{ServiceError, WatchlistService}
-import cats.implicits._
-import cats.kernel.Eq
-import eu.timepit.refined.api.RefType
 
 // TODO - Maybe only need Sync instead of Effect
 class WatchlistRoutes[F[_]: Effect](watchlistService: WatchlistService[F])(implicit PROXY: RoutesProxy[F, ServiceError]) extends Http4sDsl[F] with CirceOps {
@@ -18,7 +15,13 @@ class WatchlistRoutes[F[_]: Effect](watchlistService: WatchlistService[F])(impli
     case GET -> Root / "watchlist" / customerId =>
       CustomerId(customerId).fold(
         error => BadRequest(ErrorResponse(error)),
-        customerId => watchlistService.watchlist(customerId).flatMap(Created(_))
+        customerId => watchlistService.watchlist(customerId) >>= (Ok(_))
+      )
+
+    case request @ POST -> Root / "watchlist" / customerId =>
+      CustomerId(customerId).fold(
+        error => BadRequest(ErrorResponse(error)),
+        customerId => request.as[Watchlist.Item] >>= watchlistService.add(customerId) >>= (Created(_))
       )
   })
 }

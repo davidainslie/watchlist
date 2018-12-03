@@ -10,7 +10,13 @@ import cats.implicits._
 class WatchlistServiceInterpreter[F[_]](watchlistRepository: WatchlistRepository[F])(implicit F: MonadError[F, Throwable]) extends WatchlistService[F] {
   def watchlist(customerId: CustomerId): F[Watchlist] =
     for {
-      wl <- /*Option(Watchlist(customerId)).pure[F]*/ watchlistRepository get customerId
+      wl <- watchlistRepository get customerId
+      watchlist <- wl.fold(F.raiseError[Watchlist](NonExistingCustomer(customerId)))(F.pure)
+    } yield watchlist
+
+  def add(customerId: CustomerId)(item: Watchlist.Item): F[Watchlist] =
+    for {
+      wl <- watchlistRepository.add(item, customerId)
       watchlist <- wl.fold(F.raiseError[Watchlist](NonExistingCustomer(customerId)))(F.pure)
     } yield watchlist
 }

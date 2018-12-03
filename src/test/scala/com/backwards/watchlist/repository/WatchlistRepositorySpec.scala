@@ -21,7 +21,7 @@ class WatchlistRepositorySpec extends WordSpec with MustMatchers {
         customerId <- CustomerId("123")
         contentId <- ContentId("54321")
         item = Watchlist.Item(contentId)
-        watchlist <- repository.add(customerId, item) toRight "No watchlist"
+        watchlist <- repository.add(item, customerId) toRight "No watchlist"
       } yield {
         watchlist.customerId mustBe customerId
 

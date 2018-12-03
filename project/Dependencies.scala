@@ -2,7 +2,7 @@ import sbt._
 
 object Dependencies {
   lazy val dependencies: Seq[ModuleID] =
-    Seq(scalatest, scalacheck, testcontainers, pureConfig, refined, cats, meowMtl, monocle, shapeless, simulacrum, fs2, scalaUri, http4s, circe
+    Seq(scalatest, scalacheck, testcontainers, pureConfig, refined, cats, meowMtl, monocle, shapeless, simulacrum, fs2, scalaUri, http4s, circe, stm
     ).flatten
   
   lazy val scalatest: Seq[ModuleID] = Seq(
@@ -117,4 +117,8 @@ object Dependencies {
       "io.circe" %% "circe-refined"
     ).map(_ % version)
   }
+  
+  lazy val stm: Seq[ModuleID] = Seq(
+    "org.scala-stm" %% "scala-stm" % "0.8"
+  )
 }

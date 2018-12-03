@@ -7,8 +7,6 @@ Customers will add items to their watchlist by selecting assets via an API.
 
 - [Setup](docs/setup.md)
 
-- [Design](docs/design.md)
-
 - [Testing](docs/testing.md)
 
 - [Run](docs/run.md)

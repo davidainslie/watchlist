@@ -56,8 +56,29 @@ class WatchlistRoutesSpec extends WordSpec with MustMatchers with Http4sDsl[IO] 
         customerId <- CustomerId("321").right.get.pure[IO]
         contentId <- ContentId("12345").right.get.pure[IO]
         watchlistItem = Watchlist.Item(contentId)
-        _ <- watchlistRepository.add(customerId, watchlistItem)
+        _ <- watchlistRepository.add(watchlistItem, customerId)
         request <- GET(Uri.uri("/watchlist/321"))
+        response <- routes.orNotFound.run(request)
+      } yield {
+        val (_, watchlist) = assert[Watchlist](response)
+
+        response.status mustBe Ok
+
+        watchlist must have (
+          'customerId (customerId),
+          'items (Seq(watchlistItem))
+        )
+      })
+    }
+
+    "add an item to a customer's watchlist" in {
+      val routes: HttpRoutes[IO] = WatchlistRoutes[IO](WatchlistServiceInterpreter[IO](InMemoryWatchlistRepository[IO]))
+
+      assert(for {
+        customerId <- CustomerId("321").right.get.pure[IO]
+        contentId <- ContentId("12345").right.get.pure[IO]
+        watchlistItem = Watchlist.Item(contentId)
+        request <- POST(Uri.uri("/watchlist/321")) withEntity watchlistItem
         response <- routes.orNotFound.run(request)
       } yield {
         val (_, watchlist) = assert[Watchlist](response)

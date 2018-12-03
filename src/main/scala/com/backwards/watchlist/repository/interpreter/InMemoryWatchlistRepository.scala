@@ -1,6 +1,6 @@
 package com.backwards.watchlist.repository.interpreter
 
-import scala.collection.concurrent.TrieMap
+import scala.concurrent.stm._
 import scala.language.higherKinds
 import cats.Applicative
 import cats.implicits._
@@ -10,20 +10,22 @@ import com.backwards.watchlist.adt.{CustomerId, Watchlist}
 import com.backwards.watchlist.repository.WatchlistRepository
 
 class InMemoryWatchlistRepository[F[_]: Applicative] extends WatchlistRepository[F] {
-  private val cache = new TrieMap[CustomerId, Watchlist]
+  private val cache = TMap.empty[CustomerId, Watchlist]
 
   val itemsLens: Lens[Watchlist, Seq[Watchlist.Item]] =
     GenLens[Watchlist](_.items)
 
-  val add: Watchlist.Item => Watchlist => Watchlist =
-    item => itemsLens.modify(_ :+ item)
-
-  def get(customerId: CustomerId): F[Option[Watchlist]] =
+  def get(customerId: CustomerId): F[Option[Watchlist]] = atomic { implicit txn =>
     cache.get(customerId).pure[F]
+  }
 
-  def add(customerId: CustomerId, item: Watchlist.Item): F[Option[Watchlist]] = {
-    val watchlist = add(item)(cache.getOrElse(customerId, Watchlist(customerId)))
-    cache.put(customerId, watchlist).pure[F]
+  def add(item: Watchlist.Item, customerId: CustomerId): F[Option[Watchlist]] = atomic { implicit txn =>
+    val add: Watchlist.Item => Watchlist => Watchlist =
+      item => itemsLens.modify(_ :+ item)
+
+    val watchlist: Watchlist = add(item)(cache.getOrElse(customerId, Watchlist(customerId)))
+
+    (cache += (customerId -> watchlist)).get(customerId).pure[F]
   }
 }
 
