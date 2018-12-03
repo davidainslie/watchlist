@@ -1,11 +1,13 @@
 package com.backwards.watchlist.routes
 
 import scala.language.higherKinds
+import cats.data.EitherT
 import cats.effect.Effect
 import cats.implicits._
-import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
+import org.http4s.{HttpRoutes, Response}
 import com.backwards.http4s.circe.CirceOps
+import com.backwards.watchlist.adt.Watchlist.ContentId
 import com.backwards.watchlist.adt.{CustomerId, Watchlist}
 import com.backwards.watchlist.service.{ServiceError, WatchlistService}
 
@@ -23,6 +25,18 @@ class WatchlistRoutes[F[_]: Effect](watchlistService: WatchlistService[F])(impli
         error => BadRequest(ErrorResponse(error)),
         customerId => request.as[Watchlist.Item] >>= watchlistService.add(customerId) >>= (Created(_))
       )
+
+    case DELETE -> Root / "watchlist" / customerId / contentId =>
+      val result: EitherT[F, F[Response[F]], Watchlist] = for {
+        customerId <- EitherT.fromEither[F](CustomerId(customerId)).leftMap(error => BadRequest(ErrorResponse(error)))
+        contentId <- EitherT.fromEither[F](ContentId(contentId)).leftMap(error => BadRequest(ErrorResponse(error)))
+        watchlist <- EitherT.liftF(watchlistService.delete(customerId)(Watchlist.Item(contentId)))
+      } yield watchlist
+
+      result.value.flatMap {
+        case Left(error) => error
+        case Right(watchlist) => Ok(watchlist)
+      }
   })
 }
 

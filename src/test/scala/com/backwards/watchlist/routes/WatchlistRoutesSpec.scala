@@ -91,6 +91,29 @@ class WatchlistRoutesSpec extends WordSpec with MustMatchers with Http4sDsl[IO] 
         )
       })
     }
+
+    "delete an item from a customer's watchlist" in {
+      val watchlistRepository = InMemoryWatchlistRepository[IO]
+      val routes: HttpRoutes[IO] = WatchlistRoutes[IO](WatchlistServiceInterpreter[IO](watchlistRepository))
+
+      assert(for {
+        customerId <- CustomerId("321").right.get.pure[IO]
+        contentId <- ContentId("12345").right.get.pure[IO]
+        watchlistItem = Watchlist.Item(contentId)
+        _ <- watchlistRepository.add(watchlistItem, customerId)
+        request <- DELETE(Uri.uri("/watchlist/321/12345"))
+        response <- routes.orNotFound.run(request)
+      } yield {
+        val (_, watchlist) = assert[Watchlist](response)
+
+        response.status mustBe Ok
+
+        watchlist must have (
+          'customerId (customerId),
+          'items (Nil)
+        )
+      })
+    }
   }
 
   "Watchlist JSON routes" should {

@@ -7,4 +7,6 @@ trait WatchlistService[F[_]] {
   def watchlist(customerId: CustomerId): F[Watchlist]
 
   def add(customerId: CustomerId)(item: Watchlist.Item): F[Watchlist]
+
+  def delete(customerId: CustomerId)(item: Watchlist.Item): F[Watchlist]
 }

@@ -2,24 +2,46 @@
 
 Assuming you installed **httpie** as per the [Setup](setup.md):
 
-## Customer adds "item" to their watchlist
+## Customer adds item to their watchlist
 
 ```bash
-$ http POST localhost:8080/node node-ip=localhost:5002
-HTTP/1.0 201 CREATED
-...
+$ http POST localhost:8080/watchlist/321 contentId=12345
+HTTP/1.1 201 Created
+Content-Length: 52
+Content-Type: application/json
+Date: Mon, 03 Dec 2018 22:58:56 GMT
+
 {
-    "data": {
-        "message": "Node added successfully",
-        "nodes": [
-            "localhost:5001",
-            "localhost:5002"
-        ]
-    }
-} 
+    "customerId": "321",
+    "items": [
+        {
+            "contentId": "12345"
+        }
+    ]
+}
 ```
 
+and add one more for luck:
 
+```bash
+$ http POST localhost:8080/watchlist/321 contentId=56789
+HTTP/1.1 201 Created
+Content-Length: 74
+Content-Type: application/json
+Date: Mon, 03 Dec 2018 22:59:55 GMT
+
+{
+    "customerId": "321",
+    "items": [
+        {
+            "contentId": "12345"
+        },
+        {
+            "contentId": "56789"
+        }
+    ]
+}
+```
 
 ## Customer accesses their watchlist
 
@@ -39,10 +61,26 @@ Date: Mon, 03 Dec 2018 21:09:35 GMT
 }
 ```
 
-Customer with one item in their watchlist:
+And an existing customer with items in their watchlist:
 
 ```bash
-$ http GET localhost:8080/watchlist/123
+$ http GET localhost:8080/watchlist/321
+HTTP/1.1 200 OK
+Content-Length: 74
+Content-Type: application/json
+Date: Mon, 03 Dec 2018 23:01:31 GMT
+
+{
+    "customerId": "321",
+    "items": [
+        {
+            "contentId": "12345"
+        },
+        {
+            "contentId": "56789"
+        }
+    ]
+}
 ```
 
 
@@ -51,19 +89,19 @@ $ http GET localhost:8080/watchlist/123
 
 
 
-- Customer can add contentIDs to their Watchlist 
+- 
 
 - Customer can delete contentIDs from their Watchlist 
 
-- Customer can see contents they added in their Watchlist 
+- 
 
 - Customer cannot see another customer’s Watchlist 
 
-- Each customer is represented by a unique 3 digit alphanumeric string 
+- 
 
-- The Watchlist items should be stored in memory 
+- 
 
-- The API should produce and consume JSON 
+- 
 
   Examples: 
 

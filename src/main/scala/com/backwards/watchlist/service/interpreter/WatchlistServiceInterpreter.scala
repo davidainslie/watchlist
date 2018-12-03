@@ -19,6 +19,12 @@ class WatchlistServiceInterpreter[F[_]](watchlistRepository: WatchlistRepository
       wl <- watchlistRepository.add(item, customerId)
       watchlist <- wl.fold(F.raiseError[Watchlist](NonExistingCustomer(customerId)))(F.pure)
     } yield watchlist
+
+  def delete(customerId: CustomerId)(item: Watchlist.Item): F[Watchlist] =
+    for {
+      wl <- watchlistRepository.delete(item, customerId)
+      watchlist <- wl.fold(F.raiseError[Watchlist](NonExistingCustomer(customerId)))(F.pure)
+    } yield watchlist
 }
 
 object WatchlistServiceInterpreter {

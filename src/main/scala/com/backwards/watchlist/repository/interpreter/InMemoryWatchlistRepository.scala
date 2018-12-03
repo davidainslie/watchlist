@@ -23,9 +23,18 @@ class InMemoryWatchlistRepository[F[_]: Applicative] extends WatchlistRepository
     val add: Watchlist.Item => Watchlist => Watchlist =
       item => itemsLens.modify(_ :+ item)
 
-    val watchlist: Watchlist = add(item)(cache.getOrElse(customerId, Watchlist(customerId)))
+    update(add, item, customerId)
+  }
 
-    (cache += (customerId -> watchlist)).get(customerId).pure[F]
+  def delete(item: Watchlist.Item, customerId: CustomerId): F[Option[Watchlist]] = atomic { implicit txn =>
+    val delete: Watchlist.Item => Watchlist => Watchlist =
+      item => itemsLens.modify(_.filterNot(_ == item))
+
+    update(delete, item, customerId)
+  }
+
+  def update(f: Watchlist.Item => Watchlist => Watchlist, item: Watchlist.Item, id: CustomerId): F[Option[Watchlist]] = atomic { implicit txn =>
+    (cache += (id -> f(item)(cache.getOrElse(id, Watchlist(id))))).get(id).pure[F]
   }
 }
 
