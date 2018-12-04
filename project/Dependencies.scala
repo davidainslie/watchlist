@@ -2,19 +2,23 @@ import sbt._
 
 object Dependencies {
   lazy val dependencies: Seq[ModuleID] =
-    Seq(scalatest, scalacheck, testcontainers, pureConfig, refined, cats, meowMtl, monocle, shapeless, simulacrum, fs2, scalaUri, http4s, circe, stm
+    Seq(scalatest, scalacheck, testcontainers, cornichon, pureConfig, refined, cats, meowMtl, monocle, shapeless, simulacrum, fs2, scalaUri, http4s, circe, stm
     ).flatten
   
   lazy val scalatest: Seq[ModuleID] = Seq(
-    "org.scalatest" %% "scalatest" % "3.0.5" % "test, it"
+    "org.scalatest" %% "scalatest" % "3.0.5" % "test, it, acceptance"
   )
 
   lazy val scalacheck: Seq[ModuleID] = Seq(
-    "org.scalacheck" %% "scalacheck" % "1.14.0" % "test, it"
+    "org.scalacheck" %% "scalacheck" % "1.14.0" % "test, it, acceptance"
   )
 
   lazy val testcontainers: Seq[ModuleID] = Seq(
-    "org.testcontainers" % "testcontainers" % "1.10.1" % "test, it"
+    "org.testcontainers" % "testcontainers" % "1.10.1" % "test, it, acceptance"
+  )
+  
+  lazy val cornichon: Seq[ModuleID] = Seq(
+    "com.github.agourlay" %% "cornichon-scalatest" % "0.16.3" % "test, it, acceptance"
   )
   
   lazy val pureConfig: Seq[ModuleID] = {
@@ -42,7 +46,7 @@ object Dependencies {
     Seq(
       "org.typelevel" %% "cats-laws",
       "org.typelevel" %% "cats-testkit"
-    ).map(_ % version % "test, it") ++ Seq(
+    ).map(_ % version % "test, it, acceptance") ++ Seq(
       "org.typelevel" %% "cats-core"
     ).map(_ % version) ++ Seq(
       "org.typelevel" %% "cats-effect" % "1.0.0"
@@ -58,7 +62,7 @@ object Dependencies {
 
     Seq(
       "com.github.julien-truffaut" %% "monocle-law"
-    ).map(_ % version % "test, it") ++ Seq(
+    ).map(_ % version % "test, it, acceptance") ++ Seq(
       "com.github.julien-truffaut" %% "monocle-core",
       "com.github.julien-truffaut" %% "monocle-macro",
       "com.github.julien-truffaut" %% "monocle-generic"
@@ -93,7 +97,7 @@ object Dependencies {
     Seq(
       "org.http4s" %% "http4s-testing",
       "org.http4s" %% "http4s-dsl"
-    ).map(_ % version % "test, it") ++ Seq(
+    ).map(_ % version % "test, it, acceptance") ++ Seq(
       "org.http4s" %% "http4s-core",
       "org.http4s" %% "http4s-dsl",
       "org.http4s" %% "http4s-blaze-server",
@@ -109,7 +113,7 @@ object Dependencies {
     Seq(
       "io.circe" %% "circe-testing",
       "io.circe" %% "circe-literal"
-    ).map(_ % version % "test, it") ++ Seq(
+    ).map(_ % version % "test, it, acceptance") ++ Seq(
       "io.circe" %% "circe-core",
       "io.circe" %% "circe-generic",
       "io.circe" %% "circe-generic-extras",

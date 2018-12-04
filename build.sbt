@@ -6,11 +6,22 @@ lazy val root = project("watchlist", file("."))
   .settings(description := "Watchlist for customers to manage their media")
   .settings(javaOptions in Test ++= Seq("-Dconfig.resource=application.test.conf"))
 
+val AcceptanceTest = config("acceptance") extend Test
+
+lazy val acceptanceSettings =
+  inConfig(AcceptanceTest)(Defaults.testSettings) ++
+    Seq(
+      fork in AcceptanceTest := true,
+      parallelExecution in AcceptanceTest := false,
+      scalaSource in AcceptanceTest := baseDirectory.value / "src/acceptance/scala"
+    )
+
 def project(id: String, base: File): Project =
   Project(id, base)
     .enablePlugins(JavaAppPackaging)
-    .configs(IntegrationTest)
+    .configs(IntegrationTest, AcceptanceTest)
     .settings(Defaults.itSettings)
+    .settings(acceptanceSettings)
     .settings(promptTheme := com.scalapenos.sbt.prompt.PromptThemes.ScalapenosTheme)
     .settings(
       resolvers ++= Seq(
