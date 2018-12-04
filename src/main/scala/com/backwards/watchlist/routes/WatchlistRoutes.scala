@@ -2,7 +2,7 @@ package com.backwards.watchlist.routes
 
 import scala.language.higherKinds
 import cats.data.EitherT
-import cats.effect.Effect
+import cats.effect.{Effect, Sync}
 import cats.implicits._
 import org.http4s.HttpRoutes
 import org.http4s.dsl.Http4sDsl
@@ -11,8 +11,7 @@ import com.backwards.watchlist.adt.Watchlist.ContentId
 import com.backwards.watchlist.adt.{CustomerId, Watchlist}
 import com.backwards.watchlist.service.{ServiceError, WatchlistService}
 
-// TODO - Maybe only need Sync instead of Effect
-class WatchlistRoutes[F[_]: Effect](watchlistService: WatchlistService[F])(implicit PROXY: RoutesProxy[F, ServiceError]) extends Http4sDsl[F] with CirceOps {
+class WatchlistRoutes[F[_]: Sync](watchlistService: WatchlistService[F])(implicit PROXY: RoutesProxy[F, ServiceError]) extends Http4sDsl[F] with CirceOps {
   val routes: HttpRoutes[F] = PROXY(HttpRoutes.of[F] {
     case GET -> Root / "watchlist" / customerId =>
       CustomerId(customerId).fold(
