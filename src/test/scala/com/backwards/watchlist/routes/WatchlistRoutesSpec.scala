@@ -18,7 +18,7 @@ import com.backwards.watchlist.service.interpreter.WatchlistServiceInterpreter
 import com.olegpy.meow.hierarchy._
 
 class WatchlistRoutesSpec extends WordSpec with MustMatchers with OneInstancePerTest with Http4sDsl[IO] with Http4sClientDsl[IO] with RoutesFixtureIO with CirceOps {
-  implicit val serviceErrorRoutesProxy: RoutesProxy[IO, ServiceError] = new ServiceErrorRoutesProxy[IO]
+  implicit val httpRoutesServiceErrorHandler: HttpRoutesErrorHandler[IO, ServiceError] = new HttpRoutesServiceErrorHandler[IO]
 
   val watchlistRepository: WatchlistRepository[IO] = InMemoryWatchlistRepository[IO]
 

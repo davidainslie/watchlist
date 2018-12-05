@@ -8,7 +8,7 @@ import org.http4s.implicits._
 import org.http4s.server.Router
 import org.http4s.server.blaze.BlazeServerBuilder
 import com.backwards.watchlist.repository.interpreter.InMemoryWatchlistRepository
-import com.backwards.watchlist.routes.{HealthRoutes, RoutesProxy, ServiceErrorRoutesProxy, WatchlistRoutes}
+import com.backwards.watchlist.routes.{HealthRoutes, HttpRoutesErrorHandler, HttpRoutesServiceErrorHandler, WatchlistRoutes}
 import com.backwards.watchlist.service.ServiceError
 import com.backwards.watchlist.service.interpreter.WatchlistServiceInterpreter
 import com.olegpy.meow.hierarchy._
@@ -20,7 +20,7 @@ object Runner extends IOApp {
   }
 
   def stream[F[_]: ConcurrentEffect]: F[ExitCode] = {
-    implicit val serviceErrorRoutesProxy: RoutesProxy[F, ServiceError] = new ServiceErrorRoutesProxy[F]
+    implicit val httpRoutesServiceErrorHandler: HttpRoutesErrorHandler[F, ServiceError] = new HttpRoutesServiceErrorHandler[F]
 
     val healthRoutes = HealthRoutes[F]
     val watchlistRoutes = WatchlistRoutes[F](WatchlistServiceInterpreter[F](InMemoryWatchlistRepository[F]))
